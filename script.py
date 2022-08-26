@@ -82,5 +82,5 @@ class AScript:
 if __name__ == '__main__':
     ascript = AScript()
     ascript.add_delay(n_arg=ArgsKeys.Script)
-    ascript.
+    ascript
     print(ascript)
