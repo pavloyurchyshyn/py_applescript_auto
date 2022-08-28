@@ -25,9 +25,11 @@ class ScriptResult:
         """
         Simple parser.
         """
+        print(resp)
         j = resp[1:-1].split(DELIMITER)
         json = {}
         for key_value in j:
+            print(key_value)
             key, value = key_value.split(KVDELIMITER)
 
             if value == AppleScrConst.MissValue:
@@ -37,6 +39,7 @@ class ScriptResult:
             elif value == AppleScrConst.AppleScrFalse:
                 value = False
             elif key in ('size', 'position'):
+                print(key, value)
                 value = value[1:-1].split(DELIMITER)
 
             json[key] = value
@@ -50,3 +53,18 @@ def execute(script: str):
     out, err = exe.communicate(input=str(script).encode(ENCOD))
 
     return ScriptResult(exe.returncode, out, err, script)
+
+
+if __name__ == '__main__':
+    resp = execute("""tell application "System Events"
+	exists window "applescript – script.py" of application process "pycharm" of application "System Events"
+	tell process "pycharm"
+		properties of window "applescript – executor.py" of application process "pycharm" of application "System Events"
+	end tell
+end tell
+""")
+    print(resp.output)
+    print(resp.error)
+    print(resp.return_code)
+    print()
+    print(resp.json())
