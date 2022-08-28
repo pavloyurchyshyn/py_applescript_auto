@@ -63,6 +63,9 @@ if __name__ == '__main__':
 	end tell
 end tell
 """)
+
+
+    'minimum value:missing value, orientation:missing value, position:0, 25, class:window, accessibility description:missing value, role description:standard window, focused:false, title:applescript – executor.py, size:1260, 621, help:missing value, entire contents:, enabled:missing value, maximum value:missing value, role:AXWindow, value:missing value, subrole:AXStandardWindow, selected:missing value, name:applescript – executor.py, description:standard window'
     print(resp.output)
     print(resp.error)
     print(resp.return_code)
