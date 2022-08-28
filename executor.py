@@ -1,4 +1,5 @@
 import os
+import re
 from subprocess import Popen, PIPE
 from constants import AppleScrConst
 
@@ -25,23 +26,33 @@ class ScriptResult:
         """
         Simple parser.
         """
-        j = resp[1:-1].split(DELIMITER)
-        json = {}
-        for key_value in j:
-            key, value = key_value.split(KVDELIMITER)
+        if resp.startswith('{'):
+            resp = resp[1:-1]
+        if resp.endswith('}'):
+            resp = resp[:-1]
+        parsed_json = {}
 
+        for b in re.findall(r'[^ =,\s]{2}[\w\s\d]+:{[\d, ]*}', resp):
+            k, v = b.split(KVDELIMITER)
+
+            if k in (AppleScrConst.ObjProp.Size, AppleScrConst.ObjProp.Position):
+                v = tuple(map(int, v[1:-1].split(DELIMITER)))
+
+            parsed_json[k] = v
+            resp = resp.replace(b + DELIMITER, '')
+
+        for key_value in resp.split(DELIMITER):
+            key, value = key_value.split(KVDELIMITER)
             if value == AppleScrConst.MissValue:
                 value = None
             elif value == AppleScrConst.AppleScrTrue:
                 value = True
             elif value == AppleScrConst.AppleScrFalse:
                 value = False
-            elif key in ('size', 'position'):
-                value = value[1:-1].split(DELIMITER)
 
-            json[key] = value
+            parsed_json[key] = value
 
-        return json
+        return parsed_json
 
 
 def execute(script: str):
@@ -50,3 +61,7 @@ def execute(script: str):
     out, err = exe.communicate(input=str(script).encode(ENCOD))
 
     return ScriptResult(exe.returncode, out, err, script)
+
+
+if __name__ == '__main__':
+    pass

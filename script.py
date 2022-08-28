@@ -52,13 +52,13 @@ class BaseAScript:
 
         return self
 
-    def add_delay(self, delay=5, next_key=None):
+    def add_delay(self, delay=5, next_key=None, **kwargs):
         """
         Add delay in applescript, equal to sleep in python.
         :param delay: seconds
         :type delay: int
         """
-        self.add('', delay=delay, next_key=next_key)
+        self.add('', delay=delay, next_key=next_key, **kwargs)
         return self
 
     @staticmethod
