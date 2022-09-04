@@ -4,16 +4,27 @@ from const import AppleScrConst, ObjProp
 
 class BaseAScript:
     def __init__(self, body: str = ArgsKeys.Script):
+        """
+        Base class to build applescript code.
+        Uses the simple principle of replacing keys with values.
+        :param body: first script value.
+        """
         self.body = str(body)
 
     def add_script(self, script, **kwargs):
+        """
+        Replaces script key by passed script.
+        """
         return self.add(script, key=ArgsKeys.Script, **kwargs)
 
     def add_value(self, script, **kwargs):
         return self.add(script, key=ArgsKeys.Value, **kwargs)
 
-    def add(self, script, key: str = ArgsKeys.Script, pos: int = 0,
-            next_key: str or None = ArgsKeys.Script, next_key_delim='\n',
+    def add(self, script,
+            key: str = ArgsKeys.Script,
+            pos: int = 0,
+            next_key: str or None = ArgsKeys.Script,
+            next_key_delim='\n',
             delay=0):
         """
         Main method of script creation.
@@ -97,7 +108,8 @@ class BaseAScript:
         for i, string in enumerate(parts.copy()):
             if string.startswith('tell'):
                 parts[i] = '\t' * t_ind + parts[i]
-                t_ind += 1
+                if 'end tell' not in parts[i]:
+                    t_ind += 1
 
             elif string == 'end tell':
                 t_ind -= 1
@@ -154,7 +166,7 @@ class AScript(BaseAScript):
     def keystroke(self, value, **kwargs):
         return self.add(CTemps.keystroke(value), **kwargs)
 
-    def set_variable(self, name: str, value=None, **kwargs):
+    def set_variable(self, name: str, value=ArgsKeys.Value, **kwargs):
         return self.add(CTemps.set_var(name, value=value), **kwargs)
 
     def tell(self, to, script=ArgsKeys.Script, next_key=None, **kwargs):
@@ -180,11 +192,40 @@ class AScript(BaseAScript):
 
 
 if __name__ == '__main__':
-    ascript = AScript()
-    ascript.tell_system_events()
-    ascript.click_at((100, 100), next_key=ArgsKeys.Script)
-    ascript.repeat_n_times(10, next_key=ArgsKeys.Script)
-    ascript.add_delay(5, next_key=ArgsKeys.Script)
-    ascript.set_variable('test_var').add('1', key=ArgsKeys.Value)
-    ascript.do_screen_of_area('test.png', (1, 2, 3, 4, 5, 6, 7, 8))
-    print(ascript)
+    # Note: better to use '' for string, because the string in a-script declares inside ""
+    # Simple example:
+    # 1) scr = BaseAScript():
+    #   @script
+    simple_example = AScript()
+    # 2) add('tell application "System Events"\n@script\nend tell', next_key=None):
+    #   tell application "System Events"
+    #         @script
+    #   end tell
+    simple_example.add('tell application "System Events"\n@script\nend tell', next_key=None)
+    # 3) add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None):
+    #   tell application "System Events"
+    #         tell application process "TEST_APP"
+    #             @xy_cond
+    #        end tell
+    #   end tell
+    simple_example.add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None)
+    # 4) add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond'):
+    #   tell application "System Events"
+    #      tell application process "TEST_APP"
+    #          copy position of window "APP_WIN_NAME" to {x, y}
+    #          @script
+    #      end tell
+    #   end tell
+    simple_example.add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond')
+    # 5) add('click at {x, y}', next_key=None):
+    #   tell application "System Events"
+    #       tell application process "TEST_APP"
+    #           copy position of window "APP_WIN_NAME" to {x, y}
+    #           click at {x, y}
+    #       end tell
+    #   end tell
+    simple_example.add('click at {x, y}', next_key=None)
+    print(f"Example:\n{simple_example}")
+
+    # Also, this methods created in AScript
+

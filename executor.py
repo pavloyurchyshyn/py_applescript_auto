@@ -15,14 +15,6 @@ class ScriptResult:
         self.error = error.decode(ENCOD)
         self.script = script
 
-    def boolean(self):
-        if self.output == ASC.AppleScrTrue:
-            return True
-        elif self.output == ASC.AppleScrFalse:
-            return False
-        else:
-            raise TypeError(f'The output is not {ASC.AppleScrTrue} or {ASC.AppleScrFalse}')
-
     def list(self, without_err=False) -> list:
         if not str(self.output):
             if without_err:
@@ -78,8 +70,24 @@ class ScriptResult:
 
         return parsed_json
 
+    @property
+    def is_none(self) -> bool:
+        return self.output == ASC.MissValue
 
-def execute(script: str):
+    @property
+    def bool(self):
+        if self.output == ASC.AppleScrTrue:
+            return True
+        elif self.output == ASC.AppleScrFalse:
+            return False
+        else:
+            raise TypeError(f'The output is not {ASC.AppleScrTrue} or {ASC.AppleScrFalse}')
+
+
+def execute(script: str) -> ScriptResult:
+    """
+    Simple applescript executor.
+    """
     script = open(script).read() if os.path.exists(script) else script
     exe = Popen(["osascript", "-"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = exe.communicate(input=str(script).encode(ENCOD))

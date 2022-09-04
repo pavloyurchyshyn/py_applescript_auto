@@ -1,4 +1,7 @@
 class ArgsKeys:
+    """
+    Keys which will be replaced by values.
+    """
     Script = '@script'
     Scr = Script
     Object = '@object'
@@ -13,9 +16,13 @@ class ArgsKeys:
     Options = '@options'
     File = '@file'
     Whom = '@whom'
+    Property = '@property'
 
 
 class CommonTemplates:
+    """
+    Simple common applescript commands.
+    """
     Tell = f'tell {ArgsKeys.Whom}{ArgsKeys.Scr}\nend tell'
     TellApplication = Tell.replace(ArgsKeys.Whom, f'application "{ArgsKeys.App}"\n')
     TellApp = TellApplication
@@ -25,7 +32,7 @@ class CommonTemplates:
     ClickAt = f'click at {ArgsKeys.Value}'
     RepeatNTimes = f'repeat {ArgsKeys.Value} times\n{ArgsKeys.Script}\nend repeat'
     SetVariable = f'set {ArgsKeys.VariableName} to {ArgsKeys.Value}'
-    CopyTo = f'copy {ArgsKeys.Object} to {ArgsKeys.Value}'
+    CopyTo = f'copy {ArgsKeys.Property} to {ArgsKeys.VariableName}'
     CreateProperty = f'property {ArgsKeys.VariableName} : {ArgsKeys.Value}'
     PropertiesOf = f'properties of {ArgsKeys.Object}'
     KeyStroke = f'keystroke {ArgsKeys.Value}'
@@ -38,8 +45,14 @@ class CommonTemplates:
     KeyDown = f'key down {ArgsKeys.Value}'
 
     @staticmethod
-    def get_copy_to_command(obj, to=ArgsKeys.Value) -> str:
-        return CommonTemplates.CopyTo.replace(ArgsKeys.Object, obj).replace(ArgsKeys.Value, to)
+    def get_copy_to_command(prop: str, dest=ArgsKeys.VariableName) -> str:
+        """
+        Copy template. copy prop to
+        :param prop: property name etc.
+        :param dest: destination -> key, variable name or some another logic
+        :return: string for example: copy position to variable_name
+        """
+        return CommonTemplates.CopyTo.replace(ArgsKeys.Property, prop).replace(ArgsKeys.VariableName, dest)
 
     copy_to = get_copy_to_command
 
@@ -103,7 +116,7 @@ class CommonTemplates:
 
     @staticmethod
     def get_repeat_command(times: str) -> str:
-        return CommonTemplates.RepeatNTimes.replace(ArgsKeys.Value, times, 1)
+        return CommonTemplates.RepeatNTimes.replace(ArgsKeys.Value, times)
 
     repeat = get_repeat_command
 
