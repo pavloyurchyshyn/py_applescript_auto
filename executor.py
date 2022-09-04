@@ -1,7 +1,7 @@
 import os
 import re
 from subprocess import Popen, PIPE
-from constants import AppleScrConst
+from const import AppleScrConst as ASC, ObjProp
 
 ENCOD = 'utf-8'
 DELIMITER = ', '
@@ -15,6 +15,14 @@ class ScriptResult:
         self.error = error.decode(ENCOD)
         self.script = script
 
+    def boolean(self):
+        if self.output == ASC.AppleScrTrue:
+            return True
+        elif self.output == ASC.AppleScrFalse:
+            return False
+        else:
+            raise TypeError(f'The output is not {ASC.AppleScrTrue} or {ASC.AppleScrFalse}')
+
     def json(self) -> dict:
         if not str(self.output):
             raise Exception(f'No output to parse: {self.output}')
@@ -26,28 +34,34 @@ class ScriptResult:
         """
         Simple parser.
         """
+        if resp == '{}':
+            return {}
+
         if resp.startswith('{'):
-            resp = resp[1:-1]
+            resp = resp[1:]
         if resp.endswith('}'):
             resp = resp[:-1]
         parsed_json = {}
 
-        for b in re.findall(r'[^ =,\s]{2}[\w\s\d]+:{[\d, ]*}', resp):
-            k, v = b.split(KVDELIMITER)
+        for k_v in re.findall(r'[^ =,\s]{2}[\w\s\d]+:{[\d, ]*}', resp):
+            k, v = k_v.split(KVDELIMITER)
 
-            if k in (AppleScrConst.ObjProp.Size, AppleScrConst.ObjProp.Position):
-                v = tuple(map(int, v[1:-1].split(DELIMITER)))
+            if k in (ObjProp.Size, ObjProp.Position):
+                if v == '{}':
+                    v = {}
+                elif re.search(r'\{[\d, ]+\}', v):
+                    v = tuple(map(int, v[1:-1].split(DELIMITER)))
 
             parsed_json[k] = v
-            resp = resp.replace(b + DELIMITER, '')
+            resp = resp.replace(k_v + DELIMITER, '')
 
         for key_value in resp.split(DELIMITER):
             key, value = key_value.split(KVDELIMITER)
-            if value == AppleScrConst.MissValue:
+            if value == ASC.MissValue:
                 value = None
-            elif value == AppleScrConst.AppleScrTrue:
+            elif value == ASC.AppleScrTrue:
                 value = True
-            elif value == AppleScrConst.AppleScrFalse:
+            elif value == ASC.AppleScrFalse:
                 value = False
 
             parsed_json[key] = value
