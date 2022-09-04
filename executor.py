@@ -23,8 +23,18 @@ class ScriptResult:
         else:
             raise TypeError(f'The output is not {ASC.AppleScrTrue} or {ASC.AppleScrFalse}')
 
-    def json(self) -> dict:
+    def list(self, without_err=False) -> list:
         if not str(self.output):
+            if without_err:
+                return []
+            raise Exception(f'No output to parse: {self.output}')
+
+        return self.output.split(DELIMITER)
+
+    def json(self, without_err=False) -> dict:
+        if not str(self.output):
+            if without_err:
+                return {}
             raise Exception(f'No output to parse: {self.output}')
 
         return self.convert_to_json(self.output)

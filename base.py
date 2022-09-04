@@ -13,7 +13,7 @@ class BaseAScript:
         return self.add(script, key=ArgsKeys.Value, **kwargs)
 
     def add(self, script, key: str = ArgsKeys.Script, pos: int = 0,
-            next_key: str = ArgsKeys.Script, next_key_delim='\n',
+            next_key: str or None = ArgsKeys.Script, next_key_delim='\n',
             delay=0):
         """
         Main method of script creation.
@@ -116,7 +116,6 @@ class AScript(BaseAScript):
     def is_focused(self, obj, **kwargs):
         return self.property_of(ObjProp.Focused, obj=obj, **kwargs)
 
-    # todo, get screen of element
     def set_frontmost(self, v=True, **kwargs):
         return self.set_variable(ObjProp.Frontmost, value=str(v).lower(), **kwargs)
 
@@ -125,6 +124,9 @@ class AScript(BaseAScript):
 
     def get_obj_pos(self, obj, **kwargs):
         return self.property_of(ObjProp.Position, obj=obj, **kwargs)
+
+    def get_entire_content(self, obj, **kwargs):
+        return self.property_of(ObjProp.EntireContents, obj=obj, **kwargs)
 
     def property_of(self, prop: str, obj: str, **kwargs):
         return self.add(f'{prop} of {obj}', **kwargs)
@@ -155,8 +157,11 @@ class AScript(BaseAScript):
     def set_variable(self, name: str, value=None, **kwargs):
         return self.add(CTemps.set_var(name, value=value), **kwargs)
 
-    def tell_system_events(self, **kwargs):
-        return self.add(CTemps.tell_app(AppleScrConst.SysEvents), **kwargs)
+    def tell(self, to, script=ArgsKeys.Script, next_key=None, **kwargs):
+        return self.add(CTemps.tell(whom=to, script=script), next_key=next_key, **kwargs)
+
+    def tell_system_events(self, next_key=None, **kwargs):
+        return self.add(CTemps.tell_app(AppleScrConst.SysEvents), next_key=next_key, **kwargs)
 
     def repeat_n_times(self, times: int, **kwargs):
         return self.add(CTemps.repeat(str(times)), **kwargs)

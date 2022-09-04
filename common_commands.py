@@ -19,7 +19,7 @@ class CommonTemplates:
     Tell = f'tell {ArgsKeys.Whom}{ArgsKeys.Scr}\nend tell'
     TellApplication = Tell.replace(ArgsKeys.Whom, f'application "{ArgsKeys.App}"\n')
     TellApp = TellApplication
-    TellWindow = Tell.replace(ArgsKeys.Whom, f'window "{ArgsKeys.Win}"\n')
+    TellWindow = Tell.replace(ArgsKeys.Whom, f'window {ArgsKeys.Win}\n')
     Delay = f'delay {ArgsKeys.Value}'
     Click = f'click {ArgsKeys.Value}'
     ClickAt = f'click at {ArgsKeys.Value}'
@@ -115,6 +115,7 @@ class CommonTemplates:
 
     @staticmethod
     def get_tell_window_command(window: str, script: str = ArgsKeys.Script) -> str:
+        window = window if type(window) is int else f'"{window}"'
         return CommonTemplates.TellWindow.replace(ArgsKeys.Win, window).replace(ArgsKeys.Script, script)
 
     tell_window = get_tell_window_command
