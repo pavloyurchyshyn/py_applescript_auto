@@ -160,7 +160,7 @@ class AScript(BaseAScript):
         return self.do_shell_script(CTemps.screencapture(file, options), **kwargs)
 
     def do_shell_script(self, script: str or tuple, **kwargs):
-        script = ' '.join(script) if type(script) is tuple else str(script)
+        script = ' '.join(script) if type(script) in (tuple, list) else str(script)
         return self.add(CTemps.do_shell_script(script), **kwargs)
 
     def keystroke(self, value, **kwargs):
@@ -194,38 +194,36 @@ class AScript(BaseAScript):
 if __name__ == '__main__':
     # Note: better to use '' for string, because the string in a-script declares inside ""
     # Simple example:
-    # 1) scr = BaseAScript():
+    simple_example = AScript()    # 1)
     #   @script
-    simple_example = AScript()
-    # 2) add('tell application "System Events"\n@script\nend tell', next_key=None):
+
+    simple_example.add('tell application "System Events"\n@script\nend tell', next_key=None)    # 2)
     #   tell application "System Events"
     #         @script
     #   end tell
-    simple_example.add('tell application "System Events"\n@script\nend tell', next_key=None)
-    # 3) add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None):
+
+    simple_example.add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None)    # 3)
     #   tell application "System Events"
     #         tell application process "TEST_APP"
     #             @xy_cond
     #        end tell
     #   end tell
-    simple_example.add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None)
-    # 4) add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond'):
+
+    simple_example.add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond')    # 4)
     #   tell application "System Events"
     #      tell application process "TEST_APP"
     #          copy position of window "APP_WIN_NAME" to {x, y}
     #          @script
     #      end tell
     #   end tell
-    simple_example.add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond')
-    # 5) add('click at {x, y}', next_key=None):
+
+    simple_example.add('click at {x, y}', next_key=None)    # 5)
     #   tell application "System Events"
     #       tell application process "TEST_APP"
     #           copy position of window "APP_WIN_NAME" to {x, y}
     #           click at {x, y}
     #       end tell
     #   end tell
-    simple_example.add('click at {x, y}', next_key=None)
     print(f"Example:\n{simple_example}")
 
     # Also, this methods created in AScript
-
