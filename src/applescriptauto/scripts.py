@@ -55,7 +55,7 @@ class GetAllElements(AScript):
         Template to get UI objects in window, etc.
         :param window: window, application, etc.
         :param tell_to: tell application/process/etc. NAME\n@script\nend tell
-        :param container_type:
+        :param container_type: type of element with elements
         :param sys_events: add tell application "System Events"
         :param set_frontmost: place program window over other
         :param as_type: type which returns, recommended list
@@ -73,8 +73,35 @@ class GetAllElements(AScript):
         self.get_entire_content(f'{container_type} {window} as {as_type}', next_key=None)
 
 
+class IfBuilder(AScript):
+    def __init__(self, if_condition,
+                 if_script=None,
+                 key=None,
+                 elif_conds_scrs: tuple[tuple[str, str], ...] = (),
+                 else_script=None,
+                 body=None,
+                 next_key=None,
+                 pos=0,
+                 ):
+        super().__init__(body)
+        elif_ = bool(elif_conds_scrs)
+        else_ = not elif_ and else_script is not None
+
+        self.if_(if_condition,
+                 script=if_script, elif_=elif_, else_=else_,
+                 pos=pos, key=key, next_key=next_key)
+
+        for i, (condition, script) in enumerate(elif_conds_scrs):
+            if len(elif_conds_scrs) - 1 == i:  # if last elif
+                else_ = else_script is not None
+                self.elif_(condition, script, else_=else_)
+
+            else:
+                self.elif_(condition, script, elif_=True)
+
+        if else_:
+            self.else_(else_script)
+
+
 if __name__ == '__main__':
-    s = ScreenshotOfWindow('~Desktop/test.png', tell_to='application "TEST"\n')
-    print(s, '\n')
-    s = GetAllElements('TEST_WINDOW', tell_to='application "TEST"\n')
-    print(s)
+    pass

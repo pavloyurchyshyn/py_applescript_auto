@@ -1,4 +1,8 @@
-class ArgsKeys:
+from typing import Iterable, Union
+from ascr_abstractions import AbsBaseAScript
+
+
+class ArgsKeys(AbsBaseAScript):
     """
     Keys which will be replaced by values.
     """
@@ -17,6 +21,10 @@ class ArgsKeys:
     File = '@file'
     Whom = '@whom'
     Property = '@property'
+    Condition = '@condition'
+    If = '@if_condition'
+    Elif = '@elif_condition'
+    Else = '@else_condition'
 
 
 class CommonTemplates:
@@ -24,6 +32,28 @@ class CommonTemplates:
     Simple common applescript commands.
     """
     Keys = ArgsKeys
+
+    @classmethod
+    def get_if_command(cls, condition, script=None) -> str:
+        condition = cls.Keys.Condition if condition is None else condition
+        script = cls.Keys.Script if script is None else script
+        return f'if {condition} then\n{script}\nend if\n'
+
+    if_ = get_if_command
+
+    @classmethod
+    def get_elif_command(cls, condition=None, script=None) -> str:
+        condition = cls.Keys.Condition if condition is None else condition
+        script = cls.Keys.Script if script is None else script
+        return f'else if {condition} then\n{script}'
+
+    elif_ = get_elif_command
+
+    @classmethod
+    def get_else_command(cls, script=None) -> str:
+        return f'else\n{cls.Keys.Script if script is None else script}'
+
+    else_ = get_else_command
 
     @classmethod
     def get_copy_to_command(cls, prop: str, dest=None) -> str:
@@ -113,7 +143,7 @@ class CommonTemplates:
     @classmethod
     def get_tell_window_command(cls, window: str, script: str = None) -> str:
         window = window if type(window) is int else f'"{window}"'
-        return CommonTemplates.get_tell_command(f'window {window}', script=script)
+        return CommonTemplates.get_tell_command(f'window {window}\n', script=script)
 
     tell_window = get_tell_window_command
 
@@ -136,12 +166,11 @@ class CommonTemplates:
     click = get_click_command
 
     @staticmethod
-    def get_click_at_command(position: tuple or str) -> str:
+    def get_click_at_command(position: Union[Iterable, str]) -> str:
         if type(position) is str:
-            pos = '{p}'.replace('p', position)
+            return 'click at {pos}'.replace('pos', position)
         else:
-            pos = '{p}'.replace('p', ', '.join(map(str, position[:2])))
-        return f'click at {pos}'
+            return 'click at {pos}'.replace('pos', ', '.join(map(str, position[:2])))
 
     click_at = get_click_at_command
 

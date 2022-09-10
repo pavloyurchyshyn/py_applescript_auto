@@ -1,3 +1,8 @@
+TELL = 'tell'
+END_TELL = 'end tell'
+END_IF = 'end if'
+
+
 class AppleScrConst:
     AppleScrTrue = 'true'
     AppleScrFalse = 'false'
