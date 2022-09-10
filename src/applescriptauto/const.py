@@ -2,6 +2,10 @@ TELL = 'tell'
 END_TELL = 'end tell'
 END_IF = 'end if'
 
+ENCOD = 'utf-8'
+DELIMITER = ', '
+KVDELIMITER = ':'
+
 
 class AppleScrConst:
     AppleScrTrue = 'true'

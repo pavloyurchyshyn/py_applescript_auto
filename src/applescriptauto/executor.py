@@ -1,11 +1,7 @@
 import os
 import re
 from subprocess import Popen, PIPE
-from const import AppleScrConst as ASC, ObjProp
-
-ENCOD = 'utf-8'
-DELIMITER = ', '
-KVDELIMITER = ':'
+from const import AppleScrConst as ASC, ObjProp, ENCOD, DELIMITER, KVDELIMITER
 
 
 class ScriptResult:
@@ -15,7 +11,7 @@ class ScriptResult:
         self.error = error.decode(ENCOD)
         self.script = script
 
-    def list(self, without_err=False) -> list:
+    def list(self, without_err: bool = False) -> list:
         if not str(self.output):
             if without_err:
                 return []
@@ -23,7 +19,7 @@ class ScriptResult:
 
         return self.output.split(DELIMITER)
 
-    def json(self, without_err=False) -> dict:
+    def json(self, without_err: bool = False) -> dict:
         if not str(self.output):
             if without_err:
                 return {}
@@ -45,7 +41,7 @@ class ScriptResult:
             resp = resp[:-1]
         parsed_json = {}
 
-        for k_v in re.findall(r'[^ =,\s]{2}[\w\s\d]+:{[\d, ]*}', resp):
+        for k_v in re.findall(r'[^ =,\s]{2}[\w\s\d]+:{[\d, ]*}', resp):  # find all values like NAME:{val, ...}
             k, v = k_v.split(KVDELIMITER)
 
             if k in (ObjProp.Size, ObjProp.Position):
@@ -75,7 +71,7 @@ class ScriptResult:
         return self.output == ASC.MissValue
 
     @property
-    def bool(self):
+    def bool(self) -> bool:
         if self.output == ASC.AppleScrTrue:
             return True
         elif self.output == ASC.AppleScrFalse:

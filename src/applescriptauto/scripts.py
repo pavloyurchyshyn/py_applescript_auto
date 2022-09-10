@@ -1,6 +1,8 @@
 from base import AScript
 from const import ObjProp
 
+__all__ = ['ScreenshotOfWindow', 'GetAllElements', 'IfBuilder']
+
 
 class ScreenshotOfWindow(AScript):
     def __init__(self, screen_path,

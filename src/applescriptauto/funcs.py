@@ -4,6 +4,12 @@ from executor import execute, ScriptResult
 from base import BaseAScript, AScript
 from common_commands import ArgsKeys
 
+__all__ = ['wait_for_condition', 'wait_for_result',
+           'wait_for_true', 'wait_for_false',
+           'wait_for_obj_appear', 'wait_for_obj_disappear',
+           'object_exists', 'object_doesn_exists',
+           ]
+
 
 def wait_for_condition(script: str or BaseAScript,
                        condition,
@@ -29,7 +35,8 @@ def wait_for_condition(script: str or BaseAScript,
         raise timeout_exception
 
 
-def wait_for_result(script: str or BaseAScript, result, timeout=5, timeout_exception=TimeoutError, delay=0) -> ScriptResult:
+def wait_for_result(script: str or BaseAScript, result, timeout=5, timeout_exception=TimeoutError,
+                    delay=0) -> ScriptResult:
     return wait_for_condition(script,
                               lambda r: r.output == result,
                               timeout=timeout, timeout_exception=timeout_exception, delay=delay
