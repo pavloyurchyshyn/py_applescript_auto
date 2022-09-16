@@ -7,6 +7,7 @@ __all__ = ['ScreenshotOfWindow', 'GetAllElements', 'IfBuilder']
 class ScreenshotOfWindow(AScript):
     def __init__(self, screen_path,
                  tell_to: AScript or str = None,
+                 body=None,
                  sys_events=True,
                  set_frontmost=True,
                  x_pos='x', y_pos='y',
@@ -17,7 +18,7 @@ class ScreenshotOfWindow(AScript):
         """
         Template for window screenshot.
         :param screen_path: where the file should be stored
-        :param tell_to: tell application/process/etc. NAME\n@script\nend tell
+        :param tell_to: this is your application/process name
         :param sys_events: add tell application "System Events"
         :param set_frontmost: place program window over other
         :param x_pos: variable name for x coordinate
@@ -27,8 +28,9 @@ class ScreenshotOfWindow(AScript):
         :param key_after_screenshot: key for the next script
         :param delay_after_frontmost: for slow systems
         """
+
         self.screen_path = screen_path
-        super().__init__()
+        super().__init__(body)
         if sys_events:
             self.tell_system_events()
 
@@ -85,6 +87,18 @@ class IfBuilder(AScript):
                  next_key=None,
                  pos=0,
                  ):
+        """
+        AScript template to build "if statements".
+        Better to build the script separately and then add it to another script.
+        :param if_condition: necessary value
+        :param if_script: by default @script
+        :param key: where "if" script should be placed
+        :param elif_conds_scrs: tuple of elif conditions and scripts
+        :param else_script: script of else statement
+        :param body: main part of script
+        :param next_key: add key after "if"
+        :param pos: position of "if" in body
+        """
         super().__init__(body)
         elif_ = bool(elif_conds_scrs)
         else_ = not elif_ and else_script is not None

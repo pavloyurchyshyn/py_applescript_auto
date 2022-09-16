@@ -7,7 +7,7 @@ from ascr_abstractions import AbsBaseAScript as AbsScr
 class BaseAScript(AbsScr):
     Keys = ArgsKeys
 
-    def __init__(self, body: Union[AbsScr, str, None] = ArgsKeys.Script):
+    def __init__(self, body: Union[AbsScr, str, None] = None):
         """
         Base class to build applescript code.
         Uses the simple principle of replacing keys with values.
@@ -16,13 +16,16 @@ class BaseAScript(AbsScr):
         body = self.Keys.Script if body is None else body
         self.body = str(body)
 
-    def add_script(self, script: Union[AbsScr, str], **kwargs):
+    def add_script(self, script: Union[AbsScr, str], **kwargs) -> AbsScr:
         """
         Replaces script key by passed script.
         """
         return self.add(script, key=ArgsKeys.Script, **kwargs)
 
-    def add_value(self, script: Union[AbsScr, str], **kwargs):
+    def add_value(self, script: Union[AbsScr, str], **kwargs) -> AbsScr:
+        """
+        Replaces value key by passed script.
+        """
         return self.add(script, key=ArgsKeys.Value, **kwargs)
 
     def add(self, script,
@@ -30,7 +33,7 @@ class BaseAScript(AbsScr):
             pos: int = 0,
             next_key: Union[AbsScr, str, None] = 0,
             next_key_delim='\n',
-            delay=0):
+            delay=0) -> AbsScr:
         """
         Main method of script creation.
         :param script: str or AScript object
@@ -57,7 +60,7 @@ class BaseAScript(AbsScr):
     def insert_scripts(self, *scripts,
                        key: str = None,
                        pos: int = 0,
-                       delimiter: str = '\n', **kwargs):
+                       delimiter: str = '\n', **kwargs) -> AbsScr:
         """
         Place few scripts in some position.
         :param scripts: the iterable object which contains str or AScript objects
@@ -66,22 +69,23 @@ class BaseAScript(AbsScr):
         self.add(delimiter.join(map(str, scripts)), key=key, pos=pos, **kwargs)
         return self
 
-    def add_kwargs(self, kwargs: dict[str, AbsScr]):
+    def add_kwargs(self, kwargs: dict[str, AbsScr]) -> AbsScr:
         """
         Replacing keys by values.
         :type kwargs: dict
-        :return:
+        :return: AScript object
         """
         for k, v in kwargs.items():
             self.body.replace(k, str(v), 1)
 
         return self
 
-    def add_delay(self, delay: Union[str, int] = 5, **kwargs):
+    def add_delay(self, delay: Union[str, int] = 5, **kwargs) -> AbsScr:
         """
         Add delay in applescript, equal to sleep in python.
         :param delay: seconds
         :type delay: int
+        :return: AScript object
         """
         self.add('', delay=delay, **kwargs)
         return self
@@ -110,7 +114,7 @@ class BaseAScript(AbsScr):
         else:
             raise KeyError(f'Not key "{key}" in script:\n {body}')
 
-    def join_scripts(self, *scripts):
+    def join_scripts(self, *scripts) -> AbsScr:
         """
         Add scripts in the end.
         """
@@ -237,6 +241,11 @@ class AScript(BaseAScript):
     def tell_system_events(self, next_key: str = None, **kwargs):
         return self.add(CTemps.tell_app(AppleScrConst.SysEvents), next_key=next_key, **kwargs)
 
+    def tell_app(self, window: Union[BaseAScript, str],
+                 script: Union[BaseAScript, str, None] = None,
+                 next_key=None, **kwargs):
+        return self.add(CTemps.tell_app(window, script), next_key=next_key, **kwargs)
+
     def tell_window(self, window: Union[BaseAScript, str], script: Union[BaseAScript, str, None] = None, **kwargs):
         return self.add(CTemps.tell_window(window, script), **kwargs)
 
@@ -267,19 +276,19 @@ if __name__ == '__main__':
     simple_example = AScript()  # 1)
     #   @script
 
-    simple_example.add('tell application "System Events"\n@script\nend tell', next_key=None)  # 2)
+    simple_example.tell_system_events()  # 2)
     #   tell application "System Events"
     #         @script
     #   end tell
 
-    simple_example.add('tell application process "TEST_APP"\n@xy_cond\nend tell', next_key=None)  # 3)
+    simple_example.tell_app('process "TEST_APP"', script='@xy_cond')  # 3)
     #   tell application "System Events"
     #         tell application process "TEST_APP"
     #             @xy_cond
-    #        end tell
+    #         end tell
     #   end tell
 
-    simple_example.add('copy position of window "APP_WIN_NAME" to {x, y}', key='@xy_cond')  # 4)
+    simple_example.copy_to('position of window "APP_WIN_NAME"', to='{x, y}', key='@xy_cond')  # 4)
     #   tell application "System Events"
     #      tell application process "TEST_APP"
     #          copy position of window "APP_WIN_NAME" to {x, y}
@@ -287,13 +296,13 @@ if __name__ == '__main__':
     #      end tell
     #   end tell
 
-    simple_example.add('click at {x, y}', next_key=None)  # 5)
+    simple_example.click_at('{x, y}', next_key=None)  # 5)
     #   tell application "System Events"
     #       tell application process "TEST_APP"
     #           copy position of window "APP_WIN_NAME" to {x, y}
     #           click at {x, y}
     #       end tell
     #   end tell
-    print(f"Example:\n{simple_example}")
+    print(f"Example:\n{simple_example.pretty_str}")
 
     # Also, this methods created in AScript

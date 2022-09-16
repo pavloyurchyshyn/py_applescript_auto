@@ -135,8 +135,9 @@ class CommonTemplates:
     repeat = get_repeat_command
 
     @classmethod
-    def get_tell_app_command(cls, app: str, script=None) -> str:
-        return CommonTemplates.get_tell_command(f'application "{app}"\n', script=script)
+    def get_tell_app_command(cls, app, script=None) -> str:
+        app = f'"{app}"' if type(app) is str else app
+        return CommonTemplates.get_tell_command(f'application {app}\n', script=script)
 
     tell_app = get_tell_app_command
 
@@ -168,7 +169,12 @@ class CommonTemplates:
     @staticmethod
     def get_click_at_command(position: Union[Iterable, str]) -> str:
         if type(position) is str:
-            return 'click at {pos}'.replace('pos', position)
+            if not position.startswith('{'):
+                position = '{' + position
+            if not position.endswith('{'):
+                position = position + '}'
+
+            return 'click at pos'.replace('pos', position)
         else:
             return 'click at {pos}'.replace('pos', ', '.join(map(str, position[:2])))
 
