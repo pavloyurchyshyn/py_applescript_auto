@@ -84,7 +84,7 @@ def execute(script: str) -> ScriptResult:
     """
     Simple applescript executor.
     """
-    script = open(script).read() if os.path.exists(script) else script
+    script = open(script).read() if os.path.exists(str(script)) else script
     exe = Popen(["osascript", "-"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = exe.communicate(input=str(script).encode(ENCOD))
 

@@ -106,4 +106,8 @@ class IfBuilder(AScript):
 
 
 if __name__ == '__main__':
-    pass
+    from executor import execute
+    finder = ScreenshotOfWindow('~/Desktop/test.png', tell_to='application process "Finder"\n')
+    res = execute(finder)
+    print(finder.pretty_str)
+    print(res.__dict__)
