@@ -246,8 +246,10 @@ class AScript(BaseAScript):
                  next_key=None, **kwargs):
         return self.add(CTemps.tell_app(window, script), next_key=next_key, **kwargs)
 
-    def tell_window(self, window: Union[BaseAScript, str], script: Union[BaseAScript, str, None] = None, **kwargs):
-        return self.add(CTemps.tell_window(window, script), **kwargs)
+    def tell_window(self, window: Union[BaseAScript, str],
+                    script: Union[BaseAScript, str, None] = None,
+                    next_key=None, **kwargs):
+        return self.add(CTemps.tell_window(window, script), next_key=next_key, **kwargs)
 
     def repeat_n_times(self, times: int, **kwargs):
         return self.add(CTemps.repeat(str(times)), **kwargs)

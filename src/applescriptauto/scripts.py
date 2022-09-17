@@ -6,7 +6,8 @@ __all__ = ['ScreenshotOfWindow', 'GetAllElements', 'IfBuilder']
 
 class ScreenshotOfWindow(AScript):
     def __init__(self, screen_path,
-                 tell_to: AScript or str = None,
+                 tell_to_process,
+                 window,
                  body=None,
                  sys_events=True,
                  set_frontmost=True,
@@ -34,12 +35,12 @@ class ScreenshotOfWindow(AScript):
         if sys_events:
             self.tell_system_events()
 
-        if tell_to is not None:
-            self.tell(tell_to)
+        self.tell(tell_to_process if str(tell_to_process).endswith('\n') else str(tell_to_process)+'\n')
 
         if set_frontmost:
             self.set_frontmost()
             self.add_delay(delay_after_frontmost)
+        self.tell_window(window)
         self.copy_to(ObjProp.Position, ''.join(('{', x_pos, ', ', y_pos, '}')))
         self.copy_to(ObjProp.Size, ''.join(('{', width, ', ', height, '}')))
         self.do_screen(options=f'-R " & {x_pos} & "," & {y_pos} & "," & {width} & "," & {height} &"',
@@ -121,7 +122,10 @@ class IfBuilder(AScript):
 
 if __name__ == '__main__':
     from executor import execute
-    finder = ScreenshotOfWindow('~/Desktop/test.png', tell_to='application process "Finder"\n')
-    res = execute(finder)
+    finder = ScreenshotOfWindow('~/Desktop/test.png',
+                                tell_to_process='application process "Finder"',
+                                window='Desktop',
+                                )
+    # res = execute(finder)
     print(finder.pretty_str)
-    print(res.__dict__)
+    # print(res.__dict__)
