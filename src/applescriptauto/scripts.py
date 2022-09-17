@@ -19,7 +19,8 @@ class ScreenshotOfWindow(AScript):
         """
         Template for window screenshot.
         :param screen_path: where the file should be stored
-        :param tell_to: this is your application/process name
+        :param tell_to_process: this is your application/process name. Example: application process "Finder"
+        :param window: window of your application/process name. Example: Recents
         :param sys_events: add tell application "System Events"
         :param set_frontmost: place program window over other
         :param x_pos: variable name for x coordinate
@@ -121,11 +122,4 @@ class IfBuilder(AScript):
 
 
 if __name__ == '__main__':
-    from executor import execute
-    finder = ScreenshotOfWindow('~/Desktop/test.png',
-                                tell_to_process='application process "Finder"',
-                                window='Desktop',
-                                )
-    # res = execute(finder)
-    print(finder.pretty_str)
-    # print(res.__dict__)
+    pass
